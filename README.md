@@ -59,7 +59,10 @@ This project allows users to fill out a biodata form, upload a profile photo, an
 
 ## 📸 Screenshot
 
-*(Add a screenshot of the form UI here if you’d like)*
+<img width="1284" height="898" alt="image" src="https://github.com/user-attachments/assets/f962a400-32c6-42c8-b235-cf6d5aa6aa08" />
+<img width="1282" height="900" alt="image" src="https://github.com/user-attachments/assets/2ee75ee1-cbe1-46e3-83a8-cdceb64a5110" />
+
+
 
 ---
 
