@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Marriage Biodata Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" xintegrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-print-color-adjust: exact;
+        }
+        .container {
+            max-width: 800px;
+            margin: 1rem auto;
+            padding: 2rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #4a5568;
+            padding-bottom: 1rem;
+        }
+        .header h1 {
+            font-size: 2.25rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        .section-title {
+            background-color: #f7fafc;
+            padding: 0.4rem 1rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #4a5568;
+            border-radius: 0.25rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        .subsection-title {
+            background-color: #dee1e2;
+            padding: 0.2rem 2rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #4a5568;
+            border-radius: 0.1rem;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        td, th {
+            padding: 0.4rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #edf2f7;
+            vertical-align: middle;
+        }
+        td:first-child {
+            width: 35%;
+            font-weight: 500;
+            color: #4a5568;
+        }
+        td:last-child {
+            color: #2d3748;
+        }
+        .input-field {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.25rem;
+            background-color: #f7fafc;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 1px #4299e1;
+        }
+        textarea.input-field {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .photo-placeholder {
+            width: 160px;
+            height: 200px;
+            border: 2px dashed #cbd5e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #a0aec0;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        .photo-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        @media print {
+            body { margin: 0; font-size: 12px; }
+            .container { box-shadow: none; border: none; margin: 0; padding: 1rem; }
+            .header h1 { font-size: 2rem; }
+            .no-print { display: none !important; }
+            .input-field { border: 1px solid transparent; background-color: white; padding: 0.5rem 0; }
+            textarea.input-field { height: auto; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4">
+
+    <div class="text-center my-4 no-print">
+        <button id="savePdfBtn" class="bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg shadow-md hover:bg-indigo-700 transition duration-300">
+            Save as PDF
+        </button>
+    </div>
+
+    <div class="container bg-white" id="biodataContainer">
+        <div class="header">
+            <h1>Marriage Biodata</h1>
+        </div>
+
+        <table>
+            <tr>
+                <td style="width: 75%; vertical-align: top; border-bottom: none; ">
+                    <h2 class="section-title">Personal Details</h2>
+                    <table>
+                        <tr>
+                            <td>Full Name</td>
+                            <td><input type="text" class="input-field" placeholder="Your full name" data-field="fullName"></td>
+                        </tr>
+                        <tr>
+                            <td>Date of Birth</td>
+                            <td><input type="text" class="input-field" placeholder="DD-MM-YYYY"></td>
+                        </tr>
+                        <tr>
+                            <td>Time of Birth</td>
+                            <td><input type="text" class="input-field" placeholder="e.g., 08:30 AM"></td>
+                        </tr>
+                    </table>
+                <td style="width: 25%; vertical-align: top; padding-left: 2rem; border-bottom: none;">
+                    <div class="photo-placeholder" id="photoContainer">
+                        <img id="profileImage" src="" class="hidden"/>
+                        <span id="photoText">Click to upload photo</span>
+                    </div>
+                    <input type="file" id="photoUpload" class="hidden" accept="image/*">
+                </td>
+            </tr>
+        </table>    
+                    <table>
+                        <tr>
+                            <td>Place of Birth</td>
+                            <td><input type="text" class="input-field" placeholder="City, Country"></td>
+                        </tr>
+                         <tr>
+                            <td>Age</td>
+                            <td><input type="text" class="input-field" placeholder="e.g., 25 Years"></td>
+                        </tr>
+                        <tr>
+                            <td>Religion/Caste</td>
+                            <td><input type="text" class="input-field" placeholder="e.g., Islam, Sunni"></td>
+                        </tr>
+                        <tr>
+                            <td>Nationality</td>
+                            <td><input type="text" class="input-field" placeholder="e.g., Bangladeshi, Indian"></td>
+                        </tr>
+                        <tr>
+                            <td>Marital Status</td>
+                            <td><input type="text" class="input-field" placeholder="e.g., Single, Divorced, Married"></td>
+                        </tr>
+                        <tr>
+                            <td>Mother Tongue</td>
+                            <td><input type="text" class="input-field" placeholder="e.g., Bengali"></td>
+                        </tr>
+                         <tr>
+                            <td>Languages Known</td>
+                            <td><input type="text" class="input-field" placeholder="Bengali, English"></td>
+                        </tr>
+                        <tr>
+                            <td>Current Address</td>
+                            <td><input type="text" class="input-field" placeholder="City, Country"></td>
+                        </tr>
+                        <tr>
+                            <td>Permanent Address</td>
+                            <td><input type="text" class="input-field" placeholder="City, Country"></td>
+                        </tr>
+                        <tr>
+                            <td>Hobbies & Interests</td>
+                            <td><input type="text" class="input-field" placeholder="Reading, Traveling"></td>
+                        </tr>
+                    </table>
+
+        <h2 class="section-title" style="margin-top: 70px;">Physical Attributes</h2>
+        <table>
+            <tr>
+                <td>Height</td>
+                <td><input type="text" class="input-field" placeholder="e.g., 5' 4&quot;"></td>
+            </tr>
+            <tr>
+                <td>Complexion</td>
+                <td><input type="text" class="input-field" placeholder="e.g., Fair"></td>
+            </tr>
+            <tr>
+                <td>Blood Group</td>
+                <td><input type="text" class="input-field" placeholder="e.g., B+"></td>
+            </tr>
+            <tr>
+                <td>Dietary Habits</td>
+                <td><input type="text" class="input-field" placeholder="e.g., Non-Vegetarian"></td>
+            </tr>
+        </table>
+
+        <h2 class="section-title">Educational Background</h2>
+        <table>
+            <tr>
+                <td>Highest Qualification</td>
+                <td><input type="text" class="input-field" placeholder="e.g., Master of Arts in English"></td>
+            </tr>
+        </table>
+
+        <h3 class="subsection-title">Graduation</h3>
+
+        <table>
+            <tr>
+                <td>University</td>
+                <td><input type="text" class="input-field" placeholder="Name of University, City"></td>
+            </tr>
+            <tr>
+                <td>Degree</td>
+                <td><input type="text" class="input-field" placeholder="e.g., Bachelor of Arts (Honours)"></td>
+            </tr>
+            <tr>
+                <td>CGPA</td>
+                <td><input type="text" class="input-field" placeholder="Enter your CGPA, e.g. 3.50"></td>
+            </tr>
+            <tr>
+                <td>Passing Year</td>
+                <td><input type="text" class="input-field" placeholder="Enter your passing year, e.g. 2025"></td>
+            </tr>
+        </table>
+
+        <h3 class="subsection-title">Higher Secondary</h3>
+
+        <table>
+            <tr>
+                <td>College</td>
+                <td><input type="text" class="input-field" placeholder="Name of College, City"></td>
+            </tr>
+            <tr>
+                <td>Field of Study</td>
+                <td><input type="text" class="input-field" placeholder="e.g., Science or Commerce or Humanities"></td>
+            </tr>
+            <tr>
+                <td>GPA</td>
+                <td><input type="text" class="input-field" placeholder="Enter your GPA, e.g. 3.50"></td>
+            </tr>
+            <tr>
+                <td>Passing Year</td>
+                <td><input type="text" class="input-field" placeholder="Enter your passing year, e.g. 2025"></td>
+            </tr>
+        </table>
+
+        <h3 class="subsection-title" style="margin-top: 50px;">Secondary</h3>
+
+        <table>
+            <tr>
+                <td>School</td>
+                <td><input type="text" class="input-field" placeholder="Name of School, City"></td>
+            </tr>
+            <tr>
+                <td>Field of Study</td>
+                <td><input type="text" class="input-field" placeholder="e.g., Science or Commerce or Humanities"></td>
+            </tr>
+            <tr>
+                <td>GPA</td>
+                <td><input type="text" class="input-field" placeholder="Enter your GPA, e.g. 3.50"></td>
+            </tr>
+            <tr>
+                <td>Passing Year</td>
+                <td><input type="text" class="input-field" placeholder="Enter your passing year, e.g. 2025"></td>
+            </tr>
+        </table>
+
+        <h2 class="section-title">Professional Details</h2>
+        <table>
+            <tr>
+                <td>Occupation</td>
+                <td><input type="text" class="input-field" placeholder="e.g., Teacher, Doctor"></td>
+            </tr>
+            <tr>
+                <td>Company</td>
+                <td><input type="text" class="input-field" placeholder="Name of Employer"></td>
+            </tr>
+            <tr>
+                <td>Designation</td>
+                <td><input type="text" class="input-field" placeholder="Job Title"></td>
+            </tr>
+            <tr>
+                <td>Work Location</td>
+                <td><input type="text" class="input-field" placeholder="City, Country"></td>
+            </tr>
+        </table>
+        
+        <h2 class="section-title">Family Background</h2>
+        <table>
+            <tr>
+                <td>Father's Name</td>
+                <td><input type="text" class="input-field"></td>
+            </tr>
+            <tr>
+                <td>Father's Occupation</td>
+                <td><input type="text" class="input-field"></td>
+            </tr>
+            <tr>
+                <td>Mother's Name</td>
+                <td><input type="text" class="input-field"></td>
+            </tr>
+            <tr>
+                <td>Mother's Occupation</td>
+                <td><input type="text" class="input-field"></td>
+            </tr>
+            <tr>
+                <td>Siblings</td>
+                <td><input type="text" class="input-field" placeholder="e.g., 1 elder brother (married)"></td>
+            </tr>
+             <tr>
+                <td>Native Place</td>
+                <td><input type="text" class="input-field" placeholder="Hometown, District"></td>
+            </tr>
+        </table>
+
+        <h2 class="section-title">Partner Expectations</h2>
+        <textarea class="input-field">We are looking for a well-educated, caring, and responsible partner who is settled in his career. He should be understanding, respect family values, and have a positive outlook on life. We believe in a harmonious and supportive marital relationship built on mutual respect and companionship.</textarea>
+
+        <h2 class="section-title">Contact Information</h2>
+        <table>
+            <tr>
+                <td>Contact Person</td>
+                <td><input type="text" class="input-field" placeholder="Father's Name / Your Name"></td>
+            </tr>
+            <tr>
+                <td>Relation with girl/boy</td>
+                <td><input type="text" class="input-field" placeholder="Father, Mother, Brother, Sister"></td>
+            </tr>
+            <tr>
+                <td>Phone Number</td>
+                <td><input type="text" class="input-field" placeholder="+880XXXXXXXXX"></td>
+            </tr>
+            <tr>
+                <td>Email Address</td>
+                <td><input type="text" class="input-field" placeholder="familyemail@example.com"></td>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        document.getElementById('savePdfBtn').addEventListener('click', function () {
+            const biodataForm = document.getElementById('biodataContainer');
+            const fullNameInput = document.querySelector('input[data-field="fullName"]');
+            const fullName = fullNameInput ? fullNameInput.value : 'Biodata';
+            const opt = {
+                margin:       0.5,
+                filename:     `${fullName.replace(/\s+/g, '_')}_Biodata.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, logging: false },
+                jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+            };
+            
+            // Temporarily remove borders for PDF generation for a cleaner look
+            const inputs = biodataForm.querySelectorAll('.input-field');
+            inputs.forEach(input => {
+                input.style.border = '1px solid transparent';
+                input.style.backgroundColor = '#fff';
+            });
+
+            html2pdf().from(biodataForm).set(opt).save().then(() => {
+                // Restore borders after PDF is saved
+                inputs.forEach(input => {
+                    input.style.border = '';
+                    input.style.backgroundColor = '';
+                });
+            });
+        });
+
+        // Photo upload logic
+        const photoContainer = document.getElementById('photoContainer');
+        const photoUpload = document.getElementById('photoUpload');
+        const profileImage = document.getElementById('profileImage');
+        const photoText = document.getElementById('photoText');
+
+        photoContainer.addEventListener('click', () => photoUpload.click());
+
+        photoUpload.addEventListener('change', function(event) {
+            if (event.target.files && event.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    profileImage.src = e.target.result;
+                    profileImage.classList.remove('hidden');
+                    photoText.classList.add('hidden');
+                }
+                reader.readAsDataURL(event.target.files[0]);
+            }
+        });
+    </script>
+</body>
+</html>
+
