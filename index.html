@@ -139,11 +139,11 @@
                         </tr>
                         <tr>
                             <td>Date of Birth</td>
-                            <td><input type="text" class="input-field" placeholder="DD-MM-YYYY"></td>
+                            <td><input type="date" class="input-field" id="dobInput"></td>
                         </tr>
                         <tr>
                             <td>Time of Birth</td>
-                            <td><input type="text" class="input-field" placeholder="e.g., 08:30 AM"></td>
+                            <td><input type="time" class="input-field"></td>
                         </tr>
                     </table>
                 <td style="width: 25%; vertical-align: top; padding-left: 2rem; border-bottom: none;">
@@ -162,7 +162,7 @@
                         </tr>
                          <tr>
                             <td>Age</td>
-                            <td><input type="text" class="input-field" placeholder="e.g., 25 Years"></td>
+                            <td><input type="text" class="input-field" id="ageInput" placeholder="e.g., 25 Years"></td>
                         </tr>
                         <tr>
                             <td>Religion/Caste</td>
@@ -174,7 +174,16 @@
                         </tr>
                         <tr>
                             <td>Marital Status</td>
-                            <td><input type="text" class="input-field" placeholder="e.g., Single, Divorced, Married"></td>
+                            <td>
+                                <select class="input-field">
+                                    <option value="">Select Status</option>
+                                    <option value="Single">Single</option>
+                                    <option value="Married">Married</option>
+                                    <option value="Divorced">Divorced</option>
+                                    <option value="Widowed">Widowed</option>
+                                    <option value="Awaiting Divorce">Awaiting Divorce</option>
+                                </select>
+                            </td>
                         </tr>
                         <tr>
                             <td>Mother Tongue</td>
@@ -210,11 +219,29 @@
             </tr>
             <tr>
                 <td>Blood Group</td>
-                <td><input type="text" class="input-field" placeholder="e.g., B+"></td>
+                <td>
+                    <select class="input-field">
+                        <option value="">Select Blood Group</option>
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                    </select>
+                </td>
             </tr>
             <tr>
                 <td>Dietary Habits</td>
-                <td><input type="text" class="input-field" placeholder="e.g., Non-Vegetarian"></td>
+                <td>
+                    <select class="input-field">
+                        <option value="">Select Habit</option>
+                        <option value="Vegetarian">Vegetarian</option>
+                        <option value="Non-Vegetarian">Non-Vegetarian</option>
+                    </select>
+                </td>
             </tr>
         </table>
 
@@ -348,7 +375,17 @@
             </tr>
             <tr>
                 <td>Relation with girl/boy</td>
-                <td><input type="text" class="input-field" placeholder="Father, Mother, Brother, Sister"></td>
+                <td>
+                    <select class="input-field">
+                        <option value="">Select Relation</option>
+                        <option value="Self">Self</option>
+                        <option value="Father">Father</option>
+                        <option value="Mother">Mother</option>
+                        <option value="Brother">Brother</option>
+                        <option value="Sister">Sister</option>
+                        <option value="Other Relative">Other Relative</option>
+                    </select>
+    </td>
             </tr>
             <tr>
                 <td>Phone Number</td>
@@ -436,6 +473,40 @@
             reader.readAsDataURL(event.target.files[0]);
         }
     });
+     const dobInput = document.getElementById('dobInput');
+    const ageInput = document.getElementById('ageInput');
+
+    function calculateAge() {
+        const birthDateString = dobInput.value;
+        if (!birthDateString) {
+            ageInput.value = '';
+            return;
+        }
+
+        const today = new Date();
+        const birthDate = new Date(birthDateString);
+
+        // Calculate the difference in years
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDifference = today.getMonth() - birthDate.getMonth();
+
+        // Adjust age if the birthday hasn't occurred yet this year
+        if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+
+        // Display the calculated age
+        if (age >= 0) {
+             ageInput.value = `${age} Years`;
+        } else {
+             ageInput.value = 'Invalid Date';
+        }
+    }
+
+    // Attach the function to the 'change' event of the Date of Birth input
+    if (dobInput) {
+        dobInput.addEventListener('change', calculateAge);
+    }
     </script>
 </body>
 </html>
