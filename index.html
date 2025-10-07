@@ -362,53 +362,80 @@
     </div>
 
     <script>
-        document.getElementById('savePdfBtn').addEventListener('click', function () {
-            const biodataForm = document.getElementById('biodataContainer');
-            const fullNameInput = document.querySelector('input[data-field="fullName"]');
-            const fullName = fullNameInput ? fullNameInput.value : 'Biodata';
-            const opt = {
-                margin:       0.5,
-                filename:     `${fullName.replace(/\s+/g, '_')}_Biodata.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, logging: false },
-                jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
-            };
-            
-            // Temporarily remove borders for PDF generation for a cleaner look
-            const inputs = biodataForm.querySelectorAll('.input-field');
+    document.getElementById('savePdfBtn').addEventListener('click', function () {
+        const biodataForm = document.getElementById('biodataContainer');
+        const fullNameInput = document.querySelector('input[data-field="fullName"]');
+        const fullName = fullNameInput ? fullNameInput.value : 'Biodata';
+        
+        // --- PDF PREP START ---
+        const inputs = biodataForm.querySelectorAll('.input-field');
+        const partnerExpectationsTextarea = biodataForm.querySelector('textarea.input-field');
+        
+        // 1. Temporarily style all inputs for a clean PDF look
+        inputs.forEach(input => {
+            input.style.border = '1px solid transparent';
+            input.style.backgroundColor = '#fff';
+            input.style.minHeight = 'auto'; // Ensure height collapses/adjusts
+        });
+
+        // 2. CRITICAL FIX: Convert the textarea to a div or apply special styles
+        // This ensures the entire multi-line content is visible and wraps properly.
+        const originalTextareaContent = partnerExpectationsTextarea.value;
+        const tempDiv = document.createElement('div');
+        tempDiv.classList.add('input-field-content-for-pdf');
+        tempDiv.style.padding = '0.5rem';
+        tempDiv.style.whiteSpace = 'pre-wrap'; // Keeps line breaks and wraps long lines
+        tempDiv.textContent = originalTextareaContent;
+        
+        // Replace the textarea with the plain text div for PDF generation
+        partnerExpectationsTextarea.style.display = 'none';
+        partnerExpectationsTextarea.parentNode.insertBefore(tempDiv, partnerExpectationsTextarea);
+        // --- PDF PREP END ---
+
+        const opt = {
+            margin:        0.5,
+            filename:      `${fullName.replace(/\s+/g, '_')}_Biodata.pdf`,
+            image:         { type: 'jpeg', quality: 0.98 },
+            html2canvas:   { scale: 2, useCORS: true, logging: false },
+            jsPDF:         { unit: 'in', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().from(biodataForm).set(opt).save().then(() => {
+            // --- RESTORE START ---
+            // 3. Restore the original form elements and styling
             inputs.forEach(input => {
-                input.style.border = '1px solid transparent';
-                input.style.backgroundColor = '#fff';
+                input.style.border = '';
+                input.style.backgroundColor = '';
+                input.style.minHeight = '';
             });
-
-            html2pdf().from(biodataForm).set(opt).save().then(() => {
-                // Restore borders after PDF is saved
-                inputs.forEach(input => {
-                    input.style.border = '';
-                    input.style.backgroundColor = '';
-                });
-            });
+            
+            // Remove the temporary PDF content div and show the original textarea
+            tempDiv.remove();
+            partnerExpectationsTextarea.style.display = '';
+            // --- RESTORE END ---
         });
+    });
 
-        // Photo upload logic
-        const photoContainer = document.getElementById('photoContainer');
-        const photoUpload = document.getElementById('photoUpload');
-        const profileImage = document.getElementById('profileImage');
-        const photoText = document.getElementById('photoText');
+    // ... (rest of your photo upload logic) ...
+    // Photo upload logic
+    const photoContainer = document.getElementById('photoContainer');
+    const photoUpload = document.getElementById('photoUpload');
+    const profileImage = document.getElementById('profileImage');
+    const photoText = document.getElementById('photoText');
 
-        photoContainer.addEventListener('click', () => photoUpload.click());
+    photoContainer.addEventListener('click', () => photoUpload.click());
 
-        photoUpload.addEventListener('change', function(event) {
-            if (event.target.files && event.target.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    profileImage.src = e.target.result;
-                    profileImage.classList.remove('hidden');
-                    photoText.classList.add('hidden');
-                }
-                reader.readAsDataURL(event.target.files[0]);
+    photoUpload.addEventListener('change', function(event) {
+        if (event.target.files && event.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                profileImage.src = e.target.result;
+                profileImage.classList.remove('hidden');
+                photoText.classList.add('hidden');
             }
-        });
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    });
     </script>
 </body>
 </html>
